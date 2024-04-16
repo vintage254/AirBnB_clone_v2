@@ -10,9 +10,11 @@ class FileStorage:
 
     def all(self, cls=None):
         """Retrieve all objects of a specific class or all objects if no class is specified."""
-        if cls:
+        if cls =! None:
+            if tyoe(cls) == str:
+                cls = eval(cls)
             class_objs = {}
-            for key, val in FileStorage.__objects.items():
+            for key, val in self.__objects.items():
                 if isinstance(val, cls):
                     class_objs[key] = val
             return class_objs
@@ -63,3 +65,6 @@ class FileStorage:
         try:
             del Filestorage.__objects(object_del)
         except AttributeError:
+            pass
+        except KeyError:
+            pass
