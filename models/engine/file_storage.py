@@ -9,15 +9,17 @@ class FileStorage:
     __objects = {}
 
     def all(self, cls=None):
-        """Returns a dictionary of models currently in storage"""
-        if cls:
+        """Retrieve all objects of a specific class or all objects if no class is specified."""
+        if cls is not None:
+            if type(cls) == str:
+                cls = eval(cls)
             class_objs = {}
-            for key, val in FileStorage.__objects.items():
+            for key, val in self.__objects.items():
                 if isinstance(val, cls):
                     class_objs[key] = val
             return class_objs
         else:
-            return FileStorage.__objects
+            return self.__objects
 
     def new(self, obj):
         """Adds new object to storage dictionary"""
@@ -54,4 +56,15 @@ class FileStorage:
                 for key, val in temp.items():
                         self.all()[key] = classes[val['__class__']](**val)
         except FileNotFoundError:
+            pass
+    def delete(self, obj=None):
+        """delete obj from __objects if it’s inside"""
+        if obj is None:
+            return
+        object_del = f"{obj.__class__.__name__}.{obj.id}"
+        try:
+            del self.__object[object_del]
+        except AttributeError:
+            pass
+        except KeyError:
             pass
