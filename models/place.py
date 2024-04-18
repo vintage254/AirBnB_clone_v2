@@ -7,6 +7,14 @@ from models.amenity import Amenity
 from models.review import Review
 from sqlalchemy import Column, Float, ForeignKey, Integer, String, Table
 from sqlalchemy.orm import relationship
+association_table = Table("place_amenity", Base.metadata,
+        column("place_id", String(60),
+            ForeignKey("places.id"),
+            primary_key=True, nullable=False),
+        column("amenity_id", String(60),
+            ForeignKey("amenities.id"),
+            primary_key=True, nullable=False))
+
 class Place(BaseModel, Base):
     """ represents a place for a mysql database """
     __tablename__ = "places"
