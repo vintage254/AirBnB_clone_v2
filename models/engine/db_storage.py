@@ -9,7 +9,9 @@ from models.review import Review
 from models.state import State
 from models.user import User
 from sqlalchemy import create_engine
-from sqlalchemy.orm import relationship, scoped_session, sessionmaker
+from sqlalchemy.orm import relationship
+from sqlalchemy.orm import scoped_session 
+from sqlalchemy.orm import sessionmaker
 
 class DBStorage:
     """the db strorage
@@ -20,7 +22,7 @@ class DBStorage:
 
     __engine = None
     __session = None
-    def __init__self:
+    def __init__(self):
         """creates a new db storage instance """
         self.__engine = create_engine("mysql+mysqldb://{}:{}@{}/{}".
                 format(getenv("HBNB_MYSQL_USER"),
@@ -28,7 +30,7 @@ class DBStorage:
                     getenv("HBNB_MYSQL_HOST"),
                     getenv("HBNB_MYSQL_DB")),
                 pool_pre_ping=True)
-        if getenve("HBNB_ENV") == "test":
+        if getenv("HBNB_ENV") == "test":
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
@@ -45,9 +47,9 @@ class DBStorage:
             objects.extend(self.__session.query(Amenity).all())
         else:
             if type(cls) == str:
-                cls + eval(cls)
+                cls = eval(cls)
             objects = self.__session.query(cls)
-        return {"{}.{}".format(type(o).__name__, o.id): o for o in objects)
+        return {"{}.{}".format(type(o).__name__, o.id): o for o in objects}
     def new(self, obj):
         """add the object to the current database session"""
         self.__session.add(obj)
@@ -68,11 +70,12 @@ class DBStorage:
         """
         create all tables in the database (feature of SQLAlchemy)
         """
-        Base.metadta.create_all(self.__engine)
+        Base.metadata.create_all(self.__engine)
         session_factory = sessionmaker(bind=self.__engine,
                 expire_on_commit=False)
-        session = scoped_session(session_factory)
+        Session = scoped_session(session_factory)
         self._session = Session()
+
 
     def close(self):
         """

@@ -3,7 +3,7 @@
 import uuid
 from datetime import datetime
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, String, DATETIME
+from sqlalchemy import Column, String, DateTime
 
 Base = declarative_base()
 
@@ -13,7 +13,7 @@ class BaseModel:
         id: The basemodel id
         create_at: the datetime for creation
         update_at: the datetime of last update"""
-    id = Column(string(60), nullable=False, primary_key=True)
+    id = Column(String(60), primary_key=True, nullable=False)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow())
     updated_at = Column(DateTime,
                         nullable=False,
@@ -41,8 +41,8 @@ class BaseModel:
         """Convert instance into dict format"""
         dictionary = self.__dict__.copy()
         dictionary["__class__"] = str(type(self).__name__)
-        dictionary["created_at"} = self.created_at.isoformat()
-        dictionary["updated_at"} = self.updated_at.isoformat()
+        dictionary["created_at"] = self.created_at.isoformat()
+        dictionary["updated_at"] = self.updated_at.isoformat()
         dictionary.pop("sa_instance_state", None)
         return dictionary
     def delete(self):
