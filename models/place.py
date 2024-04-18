@@ -8,10 +8,10 @@ from models.review import Review
 from sqlalchemy import Column, Float, ForeignKey, Integer, String, Table
 from sqlalchemy.orm import relationship
 association_table = Table("place_amenity", Base.metadata,
-        column("place_id", String(60),
+        Column("place_id", String(60),
             ForeignKey("places.id"),
             primary_key=True, nullable=False),
-        column("amenity_id", String(60),
+        Column("amenity_id", String(60),
             ForeignKey("amenities.id"),
             primary_key=True, nullable=False))
 
@@ -28,7 +28,7 @@ class Place(BaseModel, Base):
     price_by_night = Column(Integer, default=0)
     latitude = Column(Float)
     longitude = Column(Float)
-    amenities = relationship("Amentity", secondary="place_amentity", viewonly=False)
+    amenities = relationship("Amenity", secondary="place_amentity", viewonly=False)
     reviews = relationship("Review", backref="place", cascade="delete")
 
     amenity_ids = []
