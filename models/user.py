@@ -12,3 +12,5 @@ class User(BaseModel, Base):
     password = Column(string(128), nullable=False)
     first_name = Column(sring(128))
     last_name = Column(string(128))
+    places = relationship("places", backref="user", cascade="delete")
+    reviews = relationship("review", backref+"user", carscade="delete")
