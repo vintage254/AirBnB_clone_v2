@@ -2,18 +2,12 @@
 """ Place Module for HBNB project """
 
 from os import getenv
-from models.base_model import Base, BaseModel
+from models.base_model import BaseModel, Base
 from models.amenity import Amenity
 from models.review import Review
-from sqlalchemy import Column, Float, ForeignKey, Integer, String, Table
+from sqlalchemy import Column, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
-association_table = Table("place_amenity", Base.metadata,
-        Column("place_id", String(60),
-            ForeignKey("places.id"),
-            primary_key=True, nullable=False),
-        Column("amenity_id", String(60),
-            ForeignKey("amenities.id"),
-            primary_key=True, nullable=False))
+
 
 class Place(BaseModel, Base):
     """ represents a place for a mysql database """
@@ -28,35 +22,24 @@ class Place(BaseModel, Base):
     price_by_night = Column(Integer, default=0)
     latitude = Column(Float)
     longitude = Column(Float)
-    amenities = relationship("Amenity", secondary="place_amentity", viewonly=False)
+    amenities = relationship("Amenity", secondary="place_amentity",
+                             viewonly=False)
     reviews = relationship("Review", backref="place", cascade="delete")
 
-    amenity_ids = []
-    overlaps = "place_amenities"
     if getenv("HBNB_TYPE_STORAGE", None) != "db":
         @property
         def reviews(self):
             """gets a list all linked reviews"""
-            review_list = []
-            for rev in list(models.storage.all(Review).values()):
-                if review.place_id == self.id:
-                    review_list,append(rev)
-            return review_list
+            return [rev for rev in models.storage.all(Review).values()
+                    if rev.place_id == self.id]
 
         @property
         def amenities(self):
             """set linked amenities"""
-            amenity_list = []
-            for amenity in list(models.storage.all(Amenity).values()):
-                if amenity.id in self.ammenity_ids:
-                    amenity_list.append(amenity)
-            return amenity_list
+            return [amenity for amenity in models.storage.all(Amenity).values()
+                    if amenity.id in self.amenity_ids]
 
         @amenities.setter
-        def amenities(self, values):
-            if type(value) == Amenity:
+        def amenities(self, value):
+            if isinstance(value, Amenity):
                 self.amenity_ids.append(value.id)
-    
-
-
-

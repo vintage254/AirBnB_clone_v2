@@ -73,7 +73,7 @@ class HBNBCommand(cmd.Cmd):
                 pline = pline[2].strip()  # pline is now str
                 if pline:
                     # check for *args or **kwargs
-                    if pline[0] == '{' and pline[-1] =='}'\
+                    if pline[0] == '{' and pline[-1] == '}'\
                             and type(eval(pline)) is dict:
                         _args = pline
                     else:
@@ -114,61 +114,34 @@ class HBNBCommand(cmd.Cmd):
         pass
 
     def do_create(self, args):
-        """ Create an object of any class"""
-        """ Command syntax: create <Class name>
-            <param 1> <param 2> <param 3>."""
-        """ Param syntax: <key name>=<value> """
-        cmd_args = args.split()
-        if not cmd_args:
+        """
+        Command syntax: create <Class name> <param 1> <param 2> <param 3>
+        Param syntax: <key name>=<value>
+        """
+
+        cmdLine = args.split()
+        if len(cmdLine) == 0:
             print("** class name missing **")
             return
-
-        class_name = cmd_args[0]
-        if class_name not in HBNBCommand.classes:
-            print("** class doesnt exit **")
+        elif cmdLine[0] not in HBNBCommand.classes:
+            print("** class doesn't exist **")
             return
-
-        """an instance of the class"""
-        new_instance = HBNBCommand.classes[class_name]()
-
-        for param in cmd_args[1:]:
-            """splitting the parameter into key and value"""
-            key_value = param.split('=')
-
-            if len(key_value) != 2:
-                print("** invalid parameter syntax: {} **".format(param))
-                return
-
-            key, value = key_value[0], key_value[1]
-
-            """ process value based on syntax """
-            if value.startswith('"') and value.endswith('"'):
-
-                """  String value """
-                value = value[1:-1].replace('_', ' ').replace('\\"', '"')
-
-            elif '.' in value:
-                """ Float value """
-                try:
+        new_instance = HBNBCommand.classes[cmdLine[0]]()
+        for arg in cmdLine[1:]:
+            try:
+                key, value = arg.split('=')
+                if value.startswith('"') and value.endswith('"'):
+                    value = value[1:-1].replace('"', '\\"').replace('_', ' ')
+                elif '.' in value:
                     value = float(value)
-                except ValueError:
-                    print("** invalid float value: {} **".format(value))
-                    return
-
-            else:
-                """ Integer value """
-                try:
+                else:
                     value = int(value)
-                except ValueError:
-                    print("** invalid integer value: {} **".format(value))
-                    return
-
-            """ set an attribute of the instance """
-            setattr(new_instance, key, value)
-
-        """ save the new instance """
-        new_instance.save()
+                setattr(new_instance, key, value)
+            except Exception:
+                pass
         print(new_instance.id)
+        storage.new(new_instance)
+        storage.save()
 
     def help_create(self):
         """ Help information for the create method """
@@ -363,6 +336,7 @@ class HBNBCommand(cmd.Cmd):
         """ Help information for the update class """
         print("Updates an object with new information")
         print("Usage: update <className> <id> <attName> <attVal>\n")
+
 
 if __name__ == "__main__":
     HBNBCommand().cmdloop()
