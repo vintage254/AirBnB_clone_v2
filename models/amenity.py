@@ -9,5 +9,7 @@ class Amenity(BaseModel, Base):
     """represents an amenity for a MYSQL database"""
     __tablename__ = "amenities"
     name = Column(String(128), nullable=False)
-    place_amenities = relationship("Place", secondary="place_amenity",
-                                   viewonly=False)
+    places = relationship("Place", secondary="place_amenity",
+                           backref="associated_amenities",
+                           overlaps="place_amenities",
+                           viewonly=False)

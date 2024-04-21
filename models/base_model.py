@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """This module defines a base class for all models in our hbnb clone"""
 import uuid
+import models
 from datetime import datetime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, String, DateTime
@@ -16,9 +17,7 @@ class BaseModel:
         update_at: the datetime of last update"""
     id = Column(String(60), primary_key=True, nullable=False)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow())
-    updated_at = Column(DateTime,
-                        nullable=False,
-                        default=datetime.utcnow())
+    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow())
 
     def __init__(self, *args, **kwargs):
         """Instatntiates a new model
@@ -43,9 +42,10 @@ class BaseModel:
         """Convert instance into dict format"""
         dictionary = self.__dict__.copy()
         dictionary["__class__"] = str(type(self).__name__)
-        dictionary["created_at"] = self.created_at.isoformat()
-        dictionary["updated_at"] = self.updated_at.isoformat()
-        dictionary.pop("sa_instance_state", None)
+        if isinstance(dictionary["created_at"], datetime):
+            dictionary["created_at"] = dictionary["created_at"].isoformat()
+        if isinstance(dictionary["updated_at"], datetime):
+            dictionary["updated_at"] = dictionary["updated_at"].isoformat()
         return dictionary
 
     def delete(self):
@@ -55,4 +55,3 @@ class BaseModel:
     def __str__(self):
         """Returns the string of the Base model instance."""
         dic = self.__dict__.copy()
-        dic.pop("_sa_instance_state", None)

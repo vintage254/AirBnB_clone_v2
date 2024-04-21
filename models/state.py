@@ -17,8 +17,9 @@ class State(BaseModel, Base):
         cities: the state-city relationship"""
     __tablename__ = "states"
     name = Column(String(128), nullable=False)
-    cities = relationship("City", backref="state", cascade="delete")
-    if getenv("HBNB_TYPE_STORAGE") != "db":
+    if getenv("HBNB_TYPE_STORAGE") == "db":
+        cities = relationship("City", backref="state", cascade="all, delete")
+    else:
         @property
         def cities(self):
             """Get a list of all releted city objects"""
