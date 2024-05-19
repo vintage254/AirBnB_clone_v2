@@ -89,7 +89,7 @@ class DBStorage:
         """
         closes the working sqlalchemy session
         """
-        self.session.close()
+        self.__session.close()
 
     def get(self, cls, id):
         """Retrieve an object"""
